@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getCategories } from "@/lib/api";
 import NavLinks from "./NavLinks";
@@ -15,14 +16,23 @@ export default async function Navbar() {
             <BanglaDate />
           </span>
         </Link>
-
-        <div className="flex items-center gap-2">
-          {/* Replaced by <AuthMenu /> in the auth step */}
-          <Link href="/signin" className="btn btn-ghost btn-sm sm:btn-md">সাইন ইন</Link>
-          <Link href="/signup" className="btn btn-sm sm:btn-md bg-brand text-white border-0 hover:bg-brand-dark">সাইন আপ</Link>
-        </div>
+  </div>
+         <div className="border-t border-gray-100">
+        <Suspense fallback={<NavLinksFallback />}>
+          <NavLinks categories={categories} />
+        </Suspense>
       </div>
-      <div className="border-t border-gray-100"><NavLinks categories={categories} /></div>
     </header>
+  );
+}
+
+// Shown for a split second while the URL is read. It's the same height as the real links, so the page doesn't jump.
+function NavLinksFallback() {
+  return (
+    <div className="flex gap-2 max-w-6xl mx-auto px-4 py-2">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="skeleton h-8 w-20 rounded-lg" />
+      ))}
+    </div>
   );
 }
