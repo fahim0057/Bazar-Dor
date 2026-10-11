@@ -1,14 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function BanglaDate() {
+export default function BanglaDate({
+  className = "text-xs text-gray-600",
+}: {
+  className?: string;
+}) {
   const [date, setDate] = useState("");
+
   useEffect(() => {
     setDate(
       new Date().toLocaleDateString("bn-BD", {
-        weekday: "long", day: "numeric", month: "long", year: "numeric",
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
       })
     );
   }, []);
-  return <span className="text-xs text-gray-600">{date}</span>;
+
+  return <span className={className}>{date}</span>;
 }

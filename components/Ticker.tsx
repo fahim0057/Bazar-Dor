@@ -12,7 +12,7 @@ export default async function Ticker() {
           <div key={i} className="flex items-center gap-2 px-5 py-2 text-sm border-r border-gray-200 whitespace-nowrap">
             <span>{p.emoji}</span>
             <span className="font-medium">{p.name}</span>
-            <span className="text-gray-600">{toBn(p.price)} টাকা/{p.unit.replace("প্রতি ", "")}</span>
+            <span className="text-gray-600">{toBn(p.price)} টাকা/{p.unitShort}</span>
             <ChangeBadge pct={p.changePct} />
           </div>
         ))}

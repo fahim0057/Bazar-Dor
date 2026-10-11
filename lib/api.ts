@@ -1,5 +1,4 @@
-import { fromBn } from "./bn";
-import type { Product, Category } from "./types";
+import type { Product, Category, Market } from "./types";
 
 const BASES = [
   "https://openapi.programming-hero.com/api/bazardor",
@@ -7,7 +6,6 @@ const BASES = [
   "https://api.abcz.workers.dev/api/bazardor",
 ];
 
-// Tries each server until one answers
 async function get(path: string) {
   for (const base of BASES) {
     try {
@@ -18,31 +16,51 @@ async function get(path: string) {
   throw new Error("API unavailable: " + path);
 }
 
-// Works whether the API sends 148 or "১৪৮"
-const num = (v: unknown) => (typeof v === "number" ? v : Number(fromBn(String(v ?? 0))) || 0);
+const UNITS: Record<string, { label: string; short: string }> = {
+  kg: { label: "প্রতি কেজি", short: "কেজি" },
+  litre: { label: "প্রতি লিটার", short: "লিটার" },
+  liter: { label: "প্রতি লিটার", short: "লিটার" },
+  dozen: { label: "প্রতি ডজন", short: "ডজন" },
+  piece: { label: "প্রতি পিস", short: "পিস" },
+  pcs: { label: "প্রতি পিস", short: "পিস" },
+};
 
-// ⚠️ ADAPT these field names after you read the real JSON
 function normalizeProduct(r: any): Product {
+  const u = UNITS[r.unit] ?? { label: `প্রতি ${r.unit}`, short: r.unit };
+
+  // Trust "dir" so the sign is always right
+  const raw = Number(r.change?.pct ?? 0);
+  const changePct =
+    r.change?.dir === "down" ? -Math.abs(raw) : r.change?.dir === "up" ? Math.abs(raw) : raw;
+
+  const markets: Market[] = (r.markets ?? []).map((m: any) => ({
+    name: m.market,
+    division: m.division,
+    min: m.min,
+    max: m.max,
+    avg: (m.min + m.max) / 2,
+  }));
+
   return {
-    id: String(r.id ?? r.slug),
-    name: r.name,
-    emoji: r.emoji ?? r.icon ?? "🛒",
-    unit: r.unit,
-    price: num(r.price),
-    changePct: num(r.change ?? r.changePercent),
+    id: r.id,
+    slug: r.slug,
+    name: r.nameBn,
+    emoji: r.image ?? r.categoryIcon ?? "🛒",
     category: r.category,
-    description: r.description,
-    markets: (r.markets ?? []).map((m: any) => ({
-      name: m.name,
-      division: m.division,
-      min: num(m.min),
-      max: num(m.max),
-      avg: num(m.avg),
-    })),
+    categoryName: r.categoryNameBn,
+    categoryIcon: r.categoryIcon,
+    unitKey: r.unit,
+    unit: u.label,
+    unitShort: u.short,
+    price: r.today,
+    yesterday: r.yesterday,
+    lastWeek: r.lastWeek,
+    lastMonth: r.lastMonth,
+    changePct,
+    markets,
   };
 }
 
-// Responses may be an array or wrapped like { data: [...] }
 const unwrap = (json: any) => (Array.isArray(json) ? json : json.data ?? json.products ?? []);
 
 export async function getProducts(category?: string): Promise<Product[]> {
@@ -50,16 +68,13 @@ export async function getProducts(category?: string): Promise<Product[]> {
   return unwrap(json).map(normalizeProduct);
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
-  try {
-    const json = await get(`/products/${id}`);
-    return normalizeProduct(json.data ?? json);
-  } catch {
-    return null;
-  }
+// Find by slug, so /product/miniket-chal works
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const all = await getProducts();
+  return all.find((p) => p.slug === slug) ?? null;
 }
 
 export async function getCategories(): Promise<Category[]> {
   const json = await get("/categories");
-  return unwrap(json).map((c: any) => ({ slug: c.slug ?? c.id, name: c.name, emoji: c.emoji ?? c.icon ?? "" }));
+  return unwrap(json).map((c: any) => ({ slug: c.slug, name: c.nameBn, emoji: c.icon }));
 }

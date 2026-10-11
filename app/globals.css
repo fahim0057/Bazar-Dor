@@ -10,7 +10,7 @@
 }
 
 html { scroll-behavior: smooth; }
-body { background: var(--color-surface); }
+
 
 @keyframes marquee {
   from { transform: translateX(0); }

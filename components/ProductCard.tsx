@@ -6,7 +6,7 @@ import ChangeBadge from "./ChangeBadge";
 export default function ProductCard({ product: p }: { product: Product }) {
   return (
     <Link
-      href={`/product/${p.id}`}
+      href={`/product/${p.slug}`}
       className="block rounded-2xl border border-gray-200 bg-card p-4 transition hover:shadow-md hover:-translate-y-0.5"
     >
       <div className="flex items-center gap-3">
