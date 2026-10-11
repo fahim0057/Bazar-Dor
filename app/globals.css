@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@plugin "daisyui";
+   @import "tailwindcss";
+   @plugin "daisyui";
 
 @theme {
   --color-brand: #058a3f;

@@ -16,7 +16,7 @@ export const metadata = { title: "বাজার দর", description: "প্�
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="bn" className={bangla.variable} data-theme="light">
-      <body className="min-h-screen flex flex-col font-sans">
+      <body className="min-h-screen flex flex-col font-sans overflow-x-hidden">
         <Navbar />
         <Ticker />
         <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">{children}</main>
