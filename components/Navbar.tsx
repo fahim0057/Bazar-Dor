@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCategories } from "@/lib/api";
 import NavLinks from "./NavLinks";
 import BanglaDate from "./BanglaDate";
+import Image from "next/image";
 
 export default async function Navbar() {
   const categories = await getCategories();
@@ -10,7 +11,7 @@ export default async function Navbar() {
     <header className="bg-card border-b border-gray-200">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand text-xl">🛒</span>
+          <Image src="/logo-icon.png" alt="বাজার দর লোগো" width={18} height={18} />
           <span className="flex flex-col leading-tight">
             <span className="text-lg font-bold">বাজার দর</span>
             <BanglaDate />

@@ -1,4 +1,5 @@
 import BanglaDate from "./BanglaDate";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -14,11 +15,7 @@ export default function Hero() {
           সব পণ্য দেখুন
         </a>
       </div>
-
-      {/* Placeholder illustration. Export the basket from Figma into /public and use <Image> later. */}
-      <div className="flex justify-center text-7xl md:text-8xl select-none" aria-hidden>
-        🧺🍅🥬
-      </div>
+        <Image src="/bazar-hero.png" alt="সবজির ঝুড়ি" width={420} height={300} priority />
     </section>
   );
 }
