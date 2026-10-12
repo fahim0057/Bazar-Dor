@@ -34,3 +34,8 @@ export const auth = betterAuth({
     },
   },
 });
+
+console.log(
+  "ENV KEYS SEEN:",
+  Object.keys(process.env).filter((k) => /MONGO|BETTER|GOOGLE|GITHUB/i.test(k))
+);
