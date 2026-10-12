@@ -1,3 +1,14 @@
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  throw new Error(
+    "MONGODB_URI is missing. Set it in Vercel > Settings > Environment Variables and redeploy."
+  );
+}
+
+const globalForMongo = globalThis as unknown as { mongoClient?: MongoClient };
+const client = globalForMongo.mongoClient ?? new MongoClient(uri);
+if (process.env.NODE_ENV !== "production") globalForMongo.mongoClient = client;
+
 import dns from "node:dns";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
@@ -7,12 +18,6 @@ import { MongoClient } from "mongodb";
 if (process.env.NODE_ENV !== "production") {
   dns.setServers(["8.8.8.8", "1.1.1.1"]);
 }
-
-// In dev, Next.js reloads files often. Reusing one client avoids opening a new DB connection every time.
-const globalForMongo = globalThis as unknown as { mongoClient?: MongoClient };
-const client = globalForMongo.mongoClient ?? new MongoClient(process.env.MONGODB_URI!);
-if (process.env.NODE_ENV !== "production") globalForMongo.mongoClient = client;
-
 export const auth = betterAuth({
   database: mongodbAdapter(client.db()),
   emailAndPassword: {
